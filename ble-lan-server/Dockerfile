@@ -1,0 +1,10 @@
+FROM ubuntu:latest
+
+MAINTAINER Guillermo Jimenez "geonexus@gmail.com", Noel Ruiz ""
+RUN apt-get update -y && apt-get install -y python3.8  python3.8-dev python3-pip
+WORKDIR /app
+COPY . /app
+ENV PORT 5000
+RUN pip3 install -r requirements.txt
+ENTRYPOINT ["python3"]
+CMD ["run.py"]
