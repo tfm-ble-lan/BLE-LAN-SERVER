@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}
+        {% if title %}
+            {{ title }}
+        {% else %}
+            Welcome to "SKELETON" Web!
+        {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="center-block">
+    <h1>Welcome to "SKELETON" Web!</h1>
+</div>
+
+{% include "footer.html" %}
+
+{% endblock %}
