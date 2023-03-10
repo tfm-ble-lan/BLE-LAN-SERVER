@@ -61,5 +61,5 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: tfmbleregistry.azurecr.io/${{ env.REPO }}:${{ github.sha }}
+          tags: tfmbleregistry.azurecr.io/${{ env.REPO }}:${{ github.sha }} , tfmbleregistry.azurecr.io/${{ env.REPO }}:latest 
           file: ./ble-lan-server/Dockerfile
