@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 MAINTAINER Guillermo Jimenez "geonexus@gmail.com", Noel Ruiz ""
-RUN apt-get update -y && apt-get install -y python3.8  python3.8-dev python3-pip
+RUN apt-get update -y && apt-get install -y python3.11  python3.11-dev python3-pip
 WORKDIR /app
 COPY . /app
 ENV PORT 5000
