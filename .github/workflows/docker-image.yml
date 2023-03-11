@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file ble-lan-server/Dockerfile --tag ble-lan-server:$(date +%s)
+      run: docker build . --file ble_lan_server/Dockerfile --tag ble-lan-server:$(date +%s)

@@ -62,4 +62,4 @@ jobs:
         with:
           push: true
           tags: tfmbleregistry.azurecr.io/${{ env.REPO }}:${{ github.sha }} , tfmbleregistry.azurecr.io/${{ env.REPO }}:latest 
-          file: ./ble-lan-server/Dockerfile
+          file: ./ble_lan_server/Dockerfile
