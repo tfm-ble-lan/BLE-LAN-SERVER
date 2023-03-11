@@ -2,10 +2,12 @@ FROM ubuntu:latest
 
 MAINTAINER Guillermo Jimenez "geonexus@gmail.com", Noel Ruiz ""
 RUN apt-get update -y && apt-get install -y python3.11  python3.11-dev python3-pip
-WORKDIR /app
-COPY ble_lan_server /app
+COPY ble_lan_server /app/ble_lan_server
+ENV PYTHONPATH /app
+#WORKDIR /app/ble_lan_server
+WORKDIR /app/
 RUN ls /app
 ENV PORT 80
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r ble_lan_server/requirements.txt
 ENTRYPOINT ["python3"]
-CMD ["run.py"]
+CMD ["ble_lan_server/run.py"]
