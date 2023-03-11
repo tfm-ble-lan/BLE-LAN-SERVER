@@ -5,7 +5,7 @@ import os
 views = Blueprint('views', __name__, template_folder='templates', static_folder='static')
 
 
-@views.route('/')
+@views.route('/home')
 def welcome():
     return render_template('home.html')
 

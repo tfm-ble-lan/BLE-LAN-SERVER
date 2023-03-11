@@ -9,6 +9,3 @@ docker run -d --name ble_lan_server -p 80:80 ble-lan-server
 For local execute:
 
     python run.py
-
-
-
