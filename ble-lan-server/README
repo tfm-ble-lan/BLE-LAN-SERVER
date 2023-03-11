@@ -1,10 +1,10 @@
 BUILD IMAGE
 -----------
-docker build -t ble-lan-server:latest .
+docker build . --file Dockerfile --tag ble-lan-server:latest
 
 RUN_IMAGE
 ---------
-docker run -d --name ble_lan_server -p 5000:5000 ble-lan-server
+docker run -d --name ble_lan_server -p 80:80 ble-lan-server
 
 For local execute:
 
