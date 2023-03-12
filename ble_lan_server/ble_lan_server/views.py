@@ -12,5 +12,5 @@ def welcome():
 
 @views.route('/favicon.ico', methods=['GET'])
 def favicon():
-    return send_from_directory(os.path.join("static", "favicon.ico"),
+    return send_from_directory(os.path.join("ble_lan_server/static", "favicon.ico"),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')

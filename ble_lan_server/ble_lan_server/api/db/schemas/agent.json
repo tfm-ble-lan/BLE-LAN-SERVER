@@ -1,0 +1,38 @@
+{
+  "ble_device": {
+    "type": "object",
+    "required": ["mac", "rssi"],
+    "properties": {
+      "mac": {
+        "type": "string"
+      },
+      "rssi": {
+        "type": "int"
+      },
+      "detected_by_agent": {
+        "type": "string"
+      },
+      "timestamp": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["timestamp"],
+          "properties": {
+            "timestamp": {
+              "type": "string"
+            },
+            "Model": {
+              "type": "string"
+            },
+            "version": {
+              "type": "number"
+            },
+            "serial_number": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
