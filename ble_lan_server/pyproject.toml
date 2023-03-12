@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ble_lan_server"
+version = "0.0.1"
+authors = [
+  { name="Guillermo Jimenez Prieto", email="geonexus@gmail.com" },
+  { name="Noel Ruiz Lopez", email="noelrl@gmail.com" },
+]
+description = "Servidor para interaccionar con los Agentes BLE y los datos que proporcionan"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "pyOpenSSL==19.0.0",
+    "flask-bootstrap==3.3.7.1",
+    "flask-wtf==0.14.3",
+    "Flask==2.2.3",
+    "requests==2.23.0",
+    "flask-restx<=1.0.5",
+    "pymongo",
+    "flask_mongoengine"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/geonexus/TFM-BLE-LAN"
+"Bug Tracker" = "https://github.com/geonexus/TFM-BLE-LAN/issues"
+
+[tool.setuptools.packages.find]
+# All the following settings are optional:
+where = ["."]  # ["."] by default
+include = ["ble_lan_server"]  # ["*"] by default
+namespaces = false  # true by default
+
+[tool.setuptools]
+include-package-data = true
+
+[project.scripts]
+cli-name = "ble_lan_server.run:main"

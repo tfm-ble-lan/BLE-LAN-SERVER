@@ -5,9 +5,7 @@ from views import views
 from ble_lan_server import blueprint
 import os
 
-
 app = Flask(__name__)
-
 
 if __name__ == '__main__':
     Bootstrap(app)
