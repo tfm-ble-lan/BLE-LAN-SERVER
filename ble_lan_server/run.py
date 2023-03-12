@@ -17,8 +17,8 @@ if __name__ == '__main__':
     app.register_blueprint(views, url_prefix="/")
     app.register_blueprint(blueprint)
 
-    if os.path.isfile('private_certificate_for_ssl.pem'):
+    if os.path.isfile('certs/ca.cert.pem'):
         app.run(debug=True, host='0.0.0.0', ssl_context=(
-            'private_certificate_for_ssl.pem', 'private_certificate_for_ssl.key'), port=SERVICE_PORT)
+            'certs/ca.cert.pem', 'certs/ca.key'), port=443)
     else:
         app.run(debug=True, host='0.0.0.0', port=SERVICE_PORT)

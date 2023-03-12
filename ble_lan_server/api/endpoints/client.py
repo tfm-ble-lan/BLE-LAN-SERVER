@@ -1,5 +1,7 @@
 from flask_restx import Resource, Namespace, fields
 from ble_lan_server.api.operations.client import Client
+from flask import request
+from ble_lan_server.api.decorators import token_required, admin_required
 
 ns = Namespace("client", description="Client's endpoint")
 
@@ -15,6 +17,7 @@ class ClientEndpoint(Resource):
     '''Show a single client item'''
     @ns.doc('get_client')
     @ns.marshal_with(client_model)
+    @admin_required
     def get(self, id):
         '''Fetch a given client'''
         DAO = Client()
@@ -25,6 +28,7 @@ class ClientEndpoint(Resource):
 
     @ns.doc('delete_client')
     @ns.response(204, 'Client deleted')
+    @admin_required
     def delete(self, id):
         '''Delete a client given its identifier'''
         DAO = Client()
@@ -33,6 +37,7 @@ class ClientEndpoint(Resource):
 
     @ns.expect(client_model)
     @ns.marshal_with(client_model)
+    @admin_required
     def put(self, id):
         DAO = Client()
         '''Update a client given its identifier'''
@@ -43,6 +48,7 @@ class ClientsEndpoint(Resource):
     '''Show a single client item'''
     @ns.doc('list_clients')
     @ns.marshal_with(client_model)
+    @admin_required
     def get(self):
         '''List all clients'''
         DAO = Client()
