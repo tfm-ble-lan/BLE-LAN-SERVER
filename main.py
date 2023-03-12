@@ -1,6 +1,13 @@
 import asyncio
 import json
 from bleak import BleakScanner
+import json
+import requests
+
+def send_to_server(devices):
+    print("Sending update")
+    e = requests.put('https://127.0.0.1/api/ble', headers={"X-API-KEY": "custom_key"}, verify=False, data=devices)
+    pass
 
 def load_known_devices():
     devices = {"devices": []}
@@ -38,6 +45,7 @@ def merge_devices(current_devices, known_devices):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print('Welcome to BLE agent, scanning close BLE devices')
+    send_to_server("{}")
     known_devices = load_known_devices()
     current_devices = scan_devices()
     merge_devices(current_devices, known_devices)
