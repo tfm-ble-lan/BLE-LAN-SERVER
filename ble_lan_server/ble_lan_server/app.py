@@ -9,6 +9,7 @@ from views import views
 from ble_lan_server import blueprint as api_blueprint
 from ble_lan_server.api.config import environment
 
+
 db = MongoEngine()
 
 
