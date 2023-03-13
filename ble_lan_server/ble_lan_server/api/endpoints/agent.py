@@ -2,14 +2,14 @@ import datetime
 
 from flask_restx import Resource, Namespace, fields
 from flask import jsonify, make_response, request
-from api.operations.client import Client
+from ble_lan_server.api.operations.client import Client
 from ble_lan_server.api.db.models.agent import Agent, Localization
 from ble_lan_server.api.decorators import token_required, admin_required
 
 ns = Namespace("agent", description="Agent's endpoint")
 
 localization_model = ns.model('Localization', {
-    'timestamp': fields.String(required=True, description='The timestamp', default=datetime.datetime.now()),
+    'timestamp': fields.Float(required=True, description='The timestamp, in UNIX time'),
     'latitude': fields.Float(required=True, description='The agent geolocalization'),
     'longitude': fields.Float(required=True, description='The agent geolocalization'),
 })

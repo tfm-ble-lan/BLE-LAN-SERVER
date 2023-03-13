@@ -2,7 +2,7 @@ import mongoengine as me
 
 
 class Detections(me.EmbeddedDocument):
-    timestamp = me.DateTimeField(required=True)
+    timestamp = me.StringField(required=True)
     rssi = me.FloatField(required=True)
     detected_by_agent = me.StringField(required=True)
 
