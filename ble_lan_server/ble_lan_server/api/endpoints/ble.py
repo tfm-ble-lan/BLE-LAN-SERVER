@@ -5,7 +5,7 @@ from ble_lan_server.api.decorators import token_required, admin_required
 ns = Namespace("ble", description="BLE's endpoint")
 
 detection_model = ns.model('DetectionModel',
-                           {'timestamp': fields.DateTime(readonly=True, description='The timestamp'),
+                           {'timestamp': fields.String(readonly=True, description='The timestamp'),
                             'rssi': fields.Float(required=True, description='The agent geolocalization'),
                             'detected_by_agent': fields.String(required=True, description='The agent geolocalization')
                             })
