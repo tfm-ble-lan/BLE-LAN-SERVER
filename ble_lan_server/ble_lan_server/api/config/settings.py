@@ -24,27 +24,29 @@ class LocalEnvironment(BaseEnvironment):
 
 class AzurePrimaryEnvironment(BaseEnvironment):
     MONGODB_SETTINGS = {
-        'db': os.environ["AZURE_DB_NAME"],
-        'host': os.environ["AZURE_DB_HOST"],
-        'port': int(os.environ["AZURE_DB_PORT"]),
-        'username': os.environ["AZURE_DB_PRIMARY_USER"],
-        'password': os.environ["AZURE_DB_PRIMARY_PASS"],
+        'db': os.environ["AZURE_DB_NAME"] if "AZURE_DB_NAME" in os.environ else "",
+        'host': os.environ["AZURE_DB_HOST"] if "AZURE_DB_HOST" in os.environ else "",
+        'port': int(os.environ["AZURE_DB_PORT"]) if "AZURE_DB_PORT" in os.environ else 27017,
+        'username': os.environ["AZURE_DB_PRIMARY_USER"] if "AZURE_DB_PRIMARY_USER" in os.environ else "",
+        'password': os.environ["AZURE_DB_PRIMARY_PASS"] if "AZURE_DB_PRIMARY_PASS" in os.environ else "",
         'ssl': True
     }
-    MONGODB_CONNECTION = f"mongodb://{os.environ['AZURE_DB_PRIMARY_USER']}:{os.environ['AZURE_DB_PRIMARY_PASS']}" \
-                         f"@tfm-ble.mongo.cosmos.azure.com:10255/" \
-                         f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@tfm-ble@"
+    MONGODB_CONNECTION = f"mongodb://{MONGODB_SETTINGS['username']}:{MONGODB_SETTINGS['password']}" \
+                         f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
+                         f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
+                         f"@{MONGODB_SETTINGS['username']}@"
 
 
 class AzureSecondaryEnvironment(BaseEnvironment):
     MONGODB_SETTINGS = {
-        'db': os.environ["AZURE_DB_NAME"],
-        'host': os.environ["AZURE_DB_HOST"],
-        'port': int(os.environ["AZURE_DB_PORT"]),
-        'username': os.environ["AZURE_DB_SECONDARY_USER"],
-        'password': os.environ["AZURE_DB_SECONDARY_PASS"],
+        'db': os.environ["AZURE_DB_NAME"] if "AZURE_DB_NAME" in os.environ else "",
+        'host': os.environ["AZURE_DB_HOST"] if "AZURE_DB_HOST" in os.environ else "",
+        'port': int(os.environ["AZURE_DB_PORT"]) if "AZURE_DB_PORT" in os.environ else 27017,
+        'username': os.environ["AZURE_DB_SECONDARY_USER"] if "AZURE_DB_SECONDARY_USER" in os.environ else "",
+        'password': os.environ["AZURE_DB_SECONDARY_PASS"] if "AZURE_DB_SECONDARY_PASS" in os.environ else "",
         'ssl': True
     }
-    MONGODB_HOST = f"mongodb://{os.environ['AZURE_DB_SECONDARY_USER']}:{os.environ['AZURE_DB_SECONDARY_PASS']}@" \
-                   f"tfm-ble.mongo.cosmos.azure.com:10255/" \
-                   f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@tfm-ble@"
+    MONGODB_CONNECTION = f"mongodb://{MONGODB_SETTINGS['username']}:{MONGODB_SETTINGS['password']}" \
+                         f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
+                         f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
+                         f"@{MONGODB_SETTINGS['username']}@"
