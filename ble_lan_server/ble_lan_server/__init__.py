@@ -15,8 +15,8 @@ authorizations = {
 }
 
 api = Api(blueprint, version='0.1', title='TFM BLE-LAN API',
-    description='API to operate with BLE-LAN server',
-    authorizations=authorizations, security='apikey')
+          description='API to operate with BLE-LAN server',
+          authorizations=authorizations, security='apikey')
 api.add_namespace(ns1)
 api.add_namespace(ns2)
 api.add_namespace(ns3)

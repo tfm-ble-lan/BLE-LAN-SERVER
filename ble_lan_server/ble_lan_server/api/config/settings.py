@@ -19,26 +19,32 @@ class LocalEnvironment(BaseEnvironment):
         'username': 'admin',
         'password': 'admin',
     }
-    #MONGODB_HOST = "mongodb://tfm-ble:tfm-ble@localhost:27017/?authMechanism=DEFAULT&authSource=tfm-ble"
+    # MONGODB_HOST = "mongodb://tfm-ble:tfm-ble@localhost:27017/?authMechanism=DEFAULT&authSource=tfm-ble"
 
 
 class AzurePrimaryEnvironment(BaseEnvironment):
     MONGODB_SETTINGS = {
-        'db': 'tfm-ble',
-        'host': 'tfm-ble.mongo.cosmos.azure.com',
-        'port': 10255,
-        'username': 'tfm-ble',
-        'password': 'pbl6bMPRRrYWLlmRlP6aH9sCCX8MmWHoXiyJ6svC36wSHylBrXSxTtmN7z5LfdlwU5nmCXByH8ImACDb4Vff4g==',
+        'db': os.environ["AZURE_DB_NAME"],
+        'host': os.environ["AZURE_DB_HOST"],
+        'port': int(os.environ["AZURE_DB_PORT"]),
+        'username': os.environ["AZURE_DB_PRIMARY_USER"],
+        'password': os.environ["AZURE_DB_PRIMARY_PASS"],
+        'ssl': True
     }
-    MONGODB_HOST = "mongodb://tfm-ble:pbl6bMPRRrYWLlmRlP6aH9sCCX8MmWHoXiyJ6svC36wSHylBrXSxTtmN7z5LfdlwU5nmCXByH8ImACDb4Vff4g==@tfm-ble.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@tfm-ble@"
+    MONGODB_CONNECTION = f"mongodb://{os.environ['AZURE_DB_PRIMARY_USER']}:{os.environ['AZURE_DB_PRIMARY_PASS']}" \
+                         f"@tfm-ble.mongo.cosmos.azure.com:10255/" \
+                         f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@tfm-ble@"
 
 
 class AzureSecondaryEnvironment(BaseEnvironment):
     MONGODB_SETTINGS = {
-        'db': 'tfm-ble',
-        'host': 'tfm-ble.mongo.cosmos.azure.com',
-        'port': 10255,
-        'username': 'tfm-ble',
-        'password': 'OJH1JPPiui1ly61UXCCamHUYTap6YB5CTz9kU9OctZwEGrm9tcaGkEHjulqVmVqx1M1hTXDS0PzeACDbOsQFHw==',
+        'db': os.environ["AZURE_DB_NAME"],
+        'host': os.environ["AZURE_DB_HOST"],
+        'port': int(os.environ["AZURE_DB_PORT"]),
+        'username': os.environ["AZURE_DB_SECONDARY_USER"],
+        'password': os.environ["AZURE_DB_SECONDARY_PASS"],
+        'ssl': True
     }
-    MONGODB_HOST = "mongodb://tfm-ble:OJH1JPPiui1ly61UXCCamHUYTap6YB5CTz9kU9OctZwEGrm9tcaGkEHjulqVmVqx1M1hTXDS0PzeACDbOsQFHw==@tfm-ble.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@tfm-ble@"
+    MONGODB_HOST = f"mongodb://{os.environ['AZURE_DB_SECONDARY_USER']}:{os.environ['AZURE_DB_SECONDARY_PASS']}@" \
+                   f"tfm-ble.mongo.cosmos.azure.com:10255/" \
+                   f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@tfm-ble@"
