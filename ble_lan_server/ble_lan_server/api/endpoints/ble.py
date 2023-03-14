@@ -1,7 +1,6 @@
 from flask import jsonify, make_response, request
 from flask_restx import Resource, Namespace, fields
-from ble_lan_server.api.operations.client import Client
-from ble_lan_server.api.db.models.ble_device import BleDevice, Detections, Localization
+from ble_lan_server.api.db.models.ble_device import BleDevice  # , Detections, Localization
 from ble_lan_server.api.decorators import token_required, admin_required
 
 ns = Namespace("ble", description="BLE's endpoint")
@@ -14,8 +13,9 @@ localization_model = ns.model('Localization', {
 
 detection_model = ns.model('DetectionModel',
                            {'timestamp': fields.Float(required=True, description='The timestamp in unix time'),
-                            'rssi': fields.Float(required=True, description='The agent distance to the agent localization'),
-                            'detected_by_agent': fields.String(required=True, description='The agent which detect the BLE device'),
+                            'rssi': fields.Float(required=True, description='The distance to the agent localization'),
+                            'detected_by_agent': fields.String(
+                                required=True, description='The agent which detect BLE device'),
                             'agent_localization': fields.Nested(localization_model)
                             })
 
@@ -33,7 +33,7 @@ class BLEEndpoint(Resource):
     '''Works with a single BLE item'''
 
     @ns.doc('get_ble')
-    #@ns.marshal_with(ble_device_model)
+    # @ns.marshal_with(ble_device_model)
     @token_required
     def get(self, mac):
         '''Fetch a given BLE'''
@@ -67,14 +67,13 @@ class BLEEndpoint(Resource):
         return result
 
 
-
 @ns.route('/')
 class BLEsEndpoint(Resource):
     '''Operations over multiple BLEs'''
 
     @ns.doc('list_ble')
-    #@ns.marshal_with(ble_device_model)
-    #@token_required
+    # @ns.marshal_with(ble_device_model)
+    @token_required
     def get(self):
         '''List all BLEs'''
         result = None
@@ -88,14 +87,12 @@ class BLEsEndpoint(Resource):
 
         return make_response(jsonify(result), 200)
 
-
     @ns.doc('post_or_update_bles')
     @ns.expect(ble_device_model)
-    #@ns.marshal_with(ble_device_model)
-    #@token_required
+    # @ns.marshal_with(ble_device_model)
+    @token_required
     def put(self):
         '''Post or update a BLE Device'''
-        result = None
         ble_device = None
         try:
             body = request.get_json()
@@ -110,4 +107,3 @@ class BLEsEndpoint(Resource):
             ns.logger.error(repr(ex))
 
         return make_response(jsonify(ble_device), 200)
-
