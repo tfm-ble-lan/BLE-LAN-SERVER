@@ -50,3 +50,17 @@ class AzureSecondaryEnvironment(BaseEnvironment):
                          f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
                          f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
                          f"@{MONGODB_SETTINGS['username']}@"
+
+class AzureTestEnvironment(BaseEnvironment):
+    MONGODB_SETTINGS = {
+        'db': os.environ["AZURE_DB_NAME"] if "AZURE_DB_NAME" in os.environ else "test",
+        'host': os.environ["AZURE_DB_HOST"] if "AZURE_DB_HOST" in os.environ else "",
+        'port': int(os.environ["AZURE_DB_PORT"]) if "AZURE_DB_PORT" in os.environ else 27017,
+        'username': os.environ["AZURE_DB_PRIMARY_USER"] if "AZURE_DB_PRIMARY_USER" in os.environ else "",
+        'password': os.environ["AZURE_DB_PRIMARY_PASS"] if "AZURE_DB_PRIMARY_PASS" in os.environ else "",
+        'ssl': True
+    }
+    MONGODB_CONNECTION = f"mongodb://{MONGODB_SETTINGS['username']}:{MONGODB_SETTINGS['password']}" \
+                         f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
+                         f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
+                         f"@{MONGODB_SETTINGS['username']}@"
