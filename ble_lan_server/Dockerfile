@@ -1,7 +1,9 @@
 FROM ubuntu:latest
 
 MAINTAINER Guillermo Jimenez "geonexus@gmail.com", Noel Ruiz "noelrl@gmail.com"
-RUN apt-get update -y && apt-get install -y python3.11  python3.11-dev python3-pip gcc
+RUN apt-get update -y && apt-get install -y python3.11  python3.11-dev python3-pip gcc openssh-server
+RUN systemctl enable ssh
+
 COPY ble_lan_server/ble_lan_server /app/ble_lan_server
 ENV PYTHONPATH /app
 #WORKDIR /app/ble_lan_server
