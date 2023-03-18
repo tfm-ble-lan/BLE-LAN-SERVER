@@ -1,4 +1,4 @@
-from flask import jsonify, current_app, Response, abort
+from flask import jsonify, current_app
 from flask import make_response as flask_make_response
 
 

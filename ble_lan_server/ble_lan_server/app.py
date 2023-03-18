@@ -4,6 +4,7 @@ import logging
 from flask import Flask, make_response
 from flask_mongoengine import MongoEngine
 from flask_bootstrap import Bootstrap, WebCDN
+from flask_cors import CORS
 from views import views
 from ble_lan_server import blueprint as api_blueprint
 from ble_lan_server.api.config import environment
@@ -19,6 +20,7 @@ def create_app():
         flask_app.config.from_object(environment)
         flask_app.config.update(ENV=environment)
         flask_app.url_map.strict_slashes = False
+        CORS(flask_app, resources={r"/api/*": {"origins": flask_app.config['APP_DOMAIN']}})
 
         # Iniciar swagger para apidoc y la base de datos
         db.init_app(flask_app)
