@@ -14,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Check Flake8 code style
+      run: cd ble_lan_server && flake8
     - name: Build the Docker image
       run: docker build . --file ble_lan_server/Dockerfile --tag ble-lan-server:${{ github.sha }}
     - name: Test Container execution

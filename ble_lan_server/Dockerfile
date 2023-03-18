@@ -12,6 +12,8 @@ RUN ls /app
 ENV PORT 80
 COPY ble_lan_server/requirements.txt /app
 RUN pip3 install -r requirements.txt
+COPY ble_lan_server/.flake8 /app
+RUN flake8 ble_lan_server
 
 ENTRYPOINT ["python3"]
 CMD ["ble_lan_server/app.py"]

@@ -2,7 +2,7 @@ from flask import jsonify, make_response, request
 from flask_restx import Resource, Namespace, fields
 from werkzeug.exceptions import NotFound
 from mongoengine.queryset.visitor import Q
-from ble_lan_server.api.db.models.ble_device import BleDevice, Detections, Localization
+from ble_lan_server.api.db.models.ble_device import BleDevice, Detections  # , Localization
 from ble_lan_server.api.decorators import token_required, admin_required
 
 ns = Namespace("ble", description="BLE's endpoint")
@@ -106,7 +106,7 @@ class BLEsEndpoint(Resource):
             new_detection = Detections(**detection)
             ble_device.detections.append(new_detection)
             ble_device.save()
-        except NotFound as e:
+        except NotFound:
             try:
                 ble_device = BleDevice(**body)
                 ble_device.save()
@@ -141,7 +141,7 @@ class BLEEndpoint3(Resource):
 
 @ns.route('/last_detection_by_agent/<string:detected_by_agent>')
 @ns.response(404, 'BLE not found')
-class BLEEndpoint3(Resource):
+class BLEEndpoint4(Resource):
     '''Works with Agents to obtain BLEs item'''
 
     @ns.doc('get_all_ble_by_agent')
@@ -150,7 +150,8 @@ class BLEEndpoint3(Resource):
         '''Fetch a given BLE'''
         result = None
         try:
-            # Utilizamos la función filter de MongoEngine para buscar los documentos que contienen el valor deseado en la propiedad "detected_by_agent"
+            # Utilizamos la función filter de MongoEngine para buscar los documentos que contienen
+            # el valor deseado en la propiedad "detected_by_agent"
             # y los ordenamos por el valor del campo "timestamp" en orden descendente
             # Obtener el valor máximo de timestamp de todas las listas de detections de todos los documentos BleDevice
 
@@ -193,4 +194,3 @@ class BLEEndpoint3(Resource):
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(jsonify(result), 200)
-

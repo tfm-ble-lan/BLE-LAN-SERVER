@@ -27,4 +27,3 @@ def token_required(func):
             abort(401)
         return func(result, *args,  **kwarg)
     return inner
-

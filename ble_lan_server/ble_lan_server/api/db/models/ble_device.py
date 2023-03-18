@@ -32,12 +32,10 @@ class Detections(db.EmbeddedDocument):
         return pretty_view
 
 
-
 class BleDevice(db.Document):
     mac = me.StringField(required=True, unique=True)
     certified = me.BooleanField(required=False, default=False)
     detections = me.ListField(me.EmbeddedDocumentField(Detections))
-
 
     def parse_to_view(self):
         pretty_view = {
@@ -46,5 +44,3 @@ class BleDevice(db.Document):
             "detections": [t.parse_to_view() for t in self.detections],
         }
         return pretty_view
-
-
