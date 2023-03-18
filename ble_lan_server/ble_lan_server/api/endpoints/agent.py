@@ -1,5 +1,5 @@
 from flask_restx import Resource, Namespace, fields
-from flask import jsonify, request
+from flask import jsonify, request, current_app
 from ble_lan_server.api.operations.custom_methods import make_response
 from ble_lan_server.api.db.models.agent import Agent
 from ble_lan_server.api.decorators import admin_required
@@ -83,7 +83,7 @@ class AgentsEndpoint(Resource):
             result = {"agent": agents}
 
         except Exception as ex:
-            ns.logger.error(repr(ex))
+            current_app.logger.error(repr(ex))
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(result, 200)
