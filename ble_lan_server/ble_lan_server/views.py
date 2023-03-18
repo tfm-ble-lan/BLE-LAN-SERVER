@@ -1,11 +1,11 @@
 from flask import send_from_directory, render_template, Blueprint
-
 import os
+
 
 views = Blueprint('views', __name__, template_folder='templates', static_folder='static')
 
 
-@views.route('/home')
+@views.route('/')
 def welcome():
     return render_template('home.html')
 

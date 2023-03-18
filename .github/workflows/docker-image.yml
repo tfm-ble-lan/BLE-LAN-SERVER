@@ -15,4 +15,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file ble_lan_server/Dockerfile --tag ble-lan-server:$(date +%s)
+      run: docker build . --file ble_lan_server/Dockerfile --tag ble-lan-server:${{ github.sha }}
+    - name: Test Container execution
+      run: timeout --preserve-status 10 docker run --rm --name ble_lan_server -p 80:80 ble-lan-server:${{ github.sha }}
+    - name: Finish
+      run: echo "FINISHED"

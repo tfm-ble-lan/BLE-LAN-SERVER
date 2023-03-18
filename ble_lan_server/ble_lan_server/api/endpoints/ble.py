@@ -95,7 +95,6 @@ class BLEsEndpoint(Resource):
     # @token_required
     def put(self):
         '''Post or update a BLE Device'''
-        result = None
         ble_device = None
         try:
             body = request.get_json()
@@ -194,3 +193,4 @@ class BLEEndpoint3(Resource):
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(jsonify(result), 200)
+

@@ -1,5 +1,7 @@
 import asyncio
 from bleak import BleakScanner
+
+
 async def main():
     print("scanning for 5 seconds, please wait...")
 
@@ -12,5 +14,3 @@ async def main():
         print(a)
 
 asyncio.run(main())
-
-

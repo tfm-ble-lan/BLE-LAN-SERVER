@@ -1,6 +1,5 @@
 import os
 import logging
-import sys
 
 from flask import Flask, make_response
 from flask_mongoengine import MongoEngine
@@ -38,8 +37,9 @@ def create_app():
     # Iniciar logger para generar logs en debug a lo largo del código
     logger = logging.getLogger(__name__)
     logger.debug(f'Working in {environment} environment')
+    # logging.basicConfig(filename='console.log', encoding='utf-8', level=logging.DEBUG)
 
-    @flask_app.route("/")
+    @flask_app.route("/status")
     def site_map():
         return make_response("It's working! Please go to /api", 200)
         # links is now a list of url, endpoint tuple

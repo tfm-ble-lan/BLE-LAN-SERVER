@@ -1,9 +1,8 @@
-import datetime
-
 from flask_restx import Resource, Namespace, fields
-from flask import jsonify, make_response, request
+from flask import jsonify, request, current_app
+from ble_lan_server.api.operations.custom_methods import make_response
 from ble_lan_server.api.db.models.agent import Agent
-from ble_lan_server.api.decorators import token_required, admin_required
+from ble_lan_server.api.decorators import admin_required
 
 ns = Namespace("agent", description="Agent's endpoint")
 
@@ -21,8 +20,8 @@ class AgentEndpoint(Resource):
     '''Show a single client item'''
 
     @ns.doc('get_agent')
+    @admin_required
     # @ns.marshal_with(agent_model)
-    #@admin_required
     def get(self, agent_name):
         """ Muestra un agente concreto """
         result = None
@@ -36,6 +35,7 @@ class AgentEndpoint(Resource):
 
     @ns.doc('delete_agent')
     @ns.response(204, 'Agent deleted')
+    @admin_required
     def delete(self, agent_name):
         """Delete an agent given its identifier"""
         result = None
@@ -52,7 +52,8 @@ class AgentEndpoint(Resource):
         return result
 
     @ns.expect(agent_model)
-    #@ns.marshal_with(agent_model)
+    @admin_required
+    # @ns.marshal_with(agent_model)
     def put(self, name):
         """Update a client given its identifier"""
         result = None
@@ -69,11 +70,12 @@ class AgentEndpoint(Resource):
 
 @ns.route('/')
 class AgentEndpoint2(Resource):
+
     """Show a single client item"""
 
     @ns.doc('list_clients')
+    @admin_required
     # @ns.marshal_with(agent_model)
-    # @admin_required
     def get(self):
         """List all agents"""
         result = None
@@ -82,16 +84,16 @@ class AgentEndpoint2(Resource):
             result = {"agent": agents}
 
         except Exception as ex:
-            ns.logger.error(repr(ex))
+            current_app.logger.error(repr(ex))
             result = make_response('Error {}'.format(repr(ex)), 400)
 
-        return make_response(jsonify(result), 200)
+        return make_response(result, 200)
 
     @ns.expect(agent_model)
+    @admin_required
     # @ns.marshal_with(agent_model)
     def post(self):
         """Update a client given its identifier"""
-        result = None
         agent = None
         try:
             body = request.get_json()
