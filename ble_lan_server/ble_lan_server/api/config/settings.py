@@ -51,6 +51,7 @@ class AzureSecondaryEnvironment(BaseEnvironment):
                          f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
                          f"@{MONGODB_SETTINGS['username']}@"
 
+
 class AzureTestEnvironment(BaseEnvironment):
     MONGODB_SETTINGS = {
         'db': os.environ["AZURE_DB_NAME"] if "AZURE_DB_NAME" in os.environ else "test",

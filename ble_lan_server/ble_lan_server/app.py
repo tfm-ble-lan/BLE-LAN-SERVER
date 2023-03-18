@@ -34,7 +34,7 @@ def create_app():
     # Iniciar logger para generar logs en debug a lo largo del código
     logger = logging.getLogger(__name__)
     logger.debug(f'Working in {environment} environment')
-    logging.basicConfig(filename='console.log', encoding='utf-8', level=logging.DEBUG)
+    # logging.basicConfig(filename='console.log', encoding='utf-8', level=logging.DEBUG)
 
     @flask_app.route("/status")
     def site_map():
