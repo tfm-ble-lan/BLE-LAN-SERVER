@@ -68,7 +68,7 @@ class AgentEndpoint(Resource):
 
 
 @ns.route('/')
-class AgentEndpoint(Resource):
+class AgentEndpoint2(Resource):
     """Show a single client item"""
 
     @ns.doc('list_clients')

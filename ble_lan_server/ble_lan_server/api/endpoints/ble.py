@@ -1,11 +1,11 @@
 from flask import jsonify, make_response, request
 from flask_restx import Resource, Namespace, fields
-from ble_lan_server.api.operations.client import Client
+from werkzeug.exceptions import NotFound
+from mongoengine.queryset.visitor import Q
 from ble_lan_server.api.db.models.ble_device import BleDevice, Detections, Localization
 from ble_lan_server.api.decorators import token_required, admin_required
 
 ns = Namespace("ble", description="BLE's endpoint")
-
 
 localization_model = ns.model('Localization', {
     'latitude': fields.Float(required=True, description='Latitude'),
@@ -14,8 +14,10 @@ localization_model = ns.model('Localization', {
 
 detection_model = ns.model('DetectionModel',
                            {'timestamp': fields.Float(required=True, description='The timestamp in unix time'),
-                            'rssi': fields.Float(required=True, description='The agent distance to the agent localization'),
-                            'detected_by_agent': fields.String(required=True, description='The agent which detect the BLE device'),
+                            'rssi': fields.Float(required=True,
+                                                 description='The agent distance to the agent localization'),
+                            'detected_by_agent': fields.String(required=True,
+                                                               description='The agent which detect the BLE device'),
                             'agent_localization': fields.Nested(localization_model)
                             })
 
@@ -33,13 +35,13 @@ class BLEEndpoint(Resource):
     '''Works with a single BLE item'''
 
     @ns.doc('get_ble')
-    #@ns.marshal_with(ble_device_model)
+    # @ns.marshal_with(ble_device_model)
     @token_required
     def get(self, mac):
         '''Fetch a given BLE'''
         result = None
         try:
-            ble_device = BleDevice.objects()
+            ble_device = BleDevice.objects().get_or_404(mac=mac)
             result = {"agent": ble_device}
 
         except Exception as ex:
@@ -67,14 +69,13 @@ class BLEEndpoint(Resource):
         return result
 
 
-
 @ns.route('/')
 class BLEsEndpoint(Resource):
     '''Operations over multiple BLEs'''
 
     @ns.doc('list_ble')
-    #@ns.marshal_with(ble_device_model)
-    #@token_required
+    # @ns.marshal_with(ble_device_model)
+    # @token_required
     def get(self):
         '''List all BLEs'''
         result = None
@@ -88,11 +89,10 @@ class BLEsEndpoint(Resource):
 
         return make_response(jsonify(result), 200)
 
-
     @ns.doc('post_or_update_bles')
     @ns.expect(ble_device_model)
-    #@ns.marshal_with(ble_device_model)
-    #@token_required
+    # @ns.marshal_with(ble_device_model)
+    # @token_required
     def put(self):
         '''Post or update a BLE Device'''
         result = None
@@ -100,14 +100,97 @@ class BLEsEndpoint(Resource):
         try:
             body = request.get_json()
             # Primero vemos si el Dispositivo existe, en cuyo caso lo actualizamos
-            if ble_device:
-                ble_device = BleDevice.objects.get_or_404(mac=body['mac'])
-                ble_device.update(**body)
-            else:
-                # Si no existe, lo añadimos
-                ble_device = BleDevice(**body).save()
+            ble_device = BleDevice.objects.get_or_404(mac=body['mac'])
+
+            # if ble_device:
+            detection = body['detections'][0]
+            new_detection = Detections(**detection)
+            ble_device.detections.append(new_detection)
+            ble_device.save()
+        except NotFound as e:
+            try:
+                ble_device = BleDevice(**body)
+                ble_device.save()
+            except Exception as ex:
+                raise ex
         except Exception as ex:
             ns.logger.error(repr(ex))
 
         return make_response(jsonify(ble_device), 200)
 
+
+@ns.route('/all_detections_by_agent/<string:detected_by_agent>')
+@ns.response(404, 'BLE not found')
+class BLEEndpoint3(Resource):
+    '''Works with Agents to obtain BLEs item'''
+
+    @ns.doc('get_all_ble_by_agent')
+    # @token_required
+    def get(self, detected_by_agent):
+        '''Fetch a given BLE'''
+        result = None
+        try:
+            ble_devices = BleDevice.objects(detections__detected_by_agent=detected_by_agent).all()
+            result = {"agent_devices": ble_devices}
+
+        except Exception as ex:
+            ns.logger.error(repr(ex))
+            result = make_response('Error {}'.format(repr(ex)), 400)
+
+        return make_response(jsonify(result), 200)
+
+
+@ns.route('/last_detection_by_agent/<string:detected_by_agent>')
+@ns.response(404, 'BLE not found')
+class BLEEndpoint3(Resource):
+    '''Works with Agents to obtain BLEs item'''
+
+    @ns.doc('get_all_ble_by_agent')
+    # @token_required
+    def get(self, detected_by_agent):
+        '''Fetch a given BLE'''
+        result = None
+        try:
+            # Utilizamos la función filter de MongoEngine para buscar los documentos que contienen el valor deseado en la propiedad "detected_by_agent"
+            # y los ordenamos por el valor del campo "timestamp" en orden descendente
+            # Obtener el valor máximo de timestamp de todas las listas de detections de todos los documentos BleDevice
+
+            max_timestamp = BleDevice.objects.aggregate(*[
+                {
+                    '$match': {
+                        'detections.detected_by_agent': detected_by_agent
+                    }
+                },
+                {
+                    '$unwind': '$detections'
+                },
+                {
+                    '$match': {
+                        'detections.detected_by_agent': detected_by_agent
+                    }
+                },
+                {
+                    '$group': {
+                        '_id': None,
+                        'max_timestamp': {'$max': '$detections.timestamp'}
+                    }
+                }
+            ]).next().get('max_timestamp')
+
+            ble_devices = BleDevice.objects(
+                Q(detections__detected_by_agent=detected_by_agent) &
+                Q(detections__timestamp=max_timestamp)
+            ).order_by('detections.timestamp').all()
+
+            new_ble_devices = []
+            for ble_device in ble_devices:
+                ble_device.detections = [detection for detection in ble_device.detections if
+                                         detection.timestamp == max_timestamp]
+                new_ble_devices.append(ble_device)
+            result = new_ble_devices
+
+        except Exception as ex:
+            ns.logger.error(repr(ex))
+            result = make_response('Error {}'.format(repr(ex)), 400)
+
+        return make_response(jsonify(result), 200)
