@@ -20,7 +20,7 @@ def create_app():
         flask_app.config.from_object(environment)
         flask_app.config.update(ENV=environment)
         flask_app.url_map.strict_slashes = False
-        CORS(flask_app, resources={r"/api/*": {"origins": flask_app.config['APP_DOMAIN']}})
+        CORS(flask_app, resources={r"/api/*": {"origins": flask_app.config['FRONTEND_DOMAIN']}})
 
         # Iniciar swagger para apidoc y la base de datos
         db.init_app(flask_app)
