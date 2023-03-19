@@ -49,6 +49,8 @@ def create_app():
 if __name__ == '__main__':
 
     app = create_app()
+    app.logger.info(f"ADMIN_API_KEY: {app.config['ADMIN_API_KEY']}")
+
     if os.path.isfile('private_certificate_for_ssl.pem'):
         app.run(debug=True, host='0.0.0.0', ssl_context=(
             'private_certificate_for_ssl.pem', 'private_certificate_for_ssl.key'), port=app.config['SERVICE_PORT'])

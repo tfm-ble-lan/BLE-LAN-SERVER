@@ -1,3 +1,4 @@
+import secrets
 from flask_restx import Resource, Namespace, fields
 from flask import jsonify, request, current_app
 from ble_lan_server.api.operations.custom_methods import make_response
@@ -10,6 +11,7 @@ agent_model = ns.model('Agent',
                        {
                            'name': fields.String(required=True, description='The Agent unique identifier'),
                            'active': fields.Boolean(required=False, description='The Agent state'),
+                           'bt_address': fields.String(required=False, description='The Bluetooth MAC Address'),
                        }
                        )
 
@@ -93,11 +95,14 @@ class AgentEndpoint2(Resource):
     @admin_required
     # @ns.marshal_with(agent_model)
     def post(self):
-        """Update a client given its identifier"""
+        """Create a client given its identifier"""
         agent = None
         try:
             body = request.get_json()
+            api_key = secrets.token_urlsafe(current_app.config.API_KEY_LENGTH)
+            body["api_key"] = api_key
             agent = Agent(**body).save()
         except Exception as ex:
-            ns.logger.error(repr(ex))
-        return make_response(jsonify(agent), 200)
+            agent = repr(ex)
+            ns.logger.error(agent)
+        return make_response(agent, 200)
