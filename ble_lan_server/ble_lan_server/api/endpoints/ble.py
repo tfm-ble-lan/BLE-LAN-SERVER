@@ -187,7 +187,8 @@ class BLEEndpoint4(Resource):
                 ble_device.detections = [detection for detection in ble_device.detections if
                                          detection.timestamp == max_timestamp]
                 new_ble_devices.append(ble_device)
-            result = new_ble_devices
+
+            result = {'ble_devices': new_ble_devices}
 
         except Exception as ex:
             ns.logger.error(repr(ex))
