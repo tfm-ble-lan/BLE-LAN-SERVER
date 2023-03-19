@@ -22,7 +22,7 @@ class LocalEnvironment(BaseEnvironment):
         'username': 'admin',
         'password': 'admin',
     }
-
+    APP_DOMAIN = "http://localhost:4200"
     # MONGODB_HOST = "mongodb://tfm-ble:tfm-ble@localhost:27017/?authMechanism=DEFAULT&authSource=tfm-ble"
 
 
