@@ -12,7 +12,7 @@ class BaseEnvironment(object):
 
 
 class LocalEnvironment(BaseEnvironment):
-    APP_DOMAIN = "https://127.0.0.1:5000"
+    FRONTEND_DOMAIN = "http://127.0.0.1:4200"
     SERVICE_PORT = 5000 if "PORT" not in os.environ.keys() else os.environ['PORT']
 
     MONGODB_SETTINGS = {
@@ -40,7 +40,7 @@ class AzurePrimaryEnvironment(BaseEnvironment):
                          f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
                          f"@{MONGODB_SETTINGS['username']}@"
 
-    APP_DOMAIN = "https://tfmbleserver.azurewebsites.net"
+    FRONTEND_DOMAIN = "https://tfmble.azurewebsites.net"
 
 
 class AzureSecondaryEnvironment(BaseEnvironment):
@@ -56,7 +56,7 @@ class AzureSecondaryEnvironment(BaseEnvironment):
                          f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
                          f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
                          f"@{MONGODB_SETTINGS['username']}@"
-    APP_DOMAIN = "https://tfmbleserver.azurewebsites.net"
+    FRONTEND_DOMAIN = "https://tfmble.azurewebsites.net"
 
 
 class AzureTestEnvironment(BaseEnvironment):
@@ -72,4 +72,4 @@ class AzureTestEnvironment(BaseEnvironment):
                          f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
                          f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
                          f"@{MONGODB_SETTINGS['username']}@"
-    APP_DOMAIN = "https://tfmbleserver.azurewebsites.net"
+    FRONTEND_DOMAIN = "https://tfmble.azurewebsites.net"
