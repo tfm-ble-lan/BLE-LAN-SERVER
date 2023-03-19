@@ -1,13 +1,17 @@
 import asyncio
 import json
 import time
+import os
 from bleak import BleakScanner, BleakClient
 import json
 import requests
 
 def send_to_server(devices):
     print("Sending update")
-    e = requests.put('http://127.0.0.1/api/ble', headers={"X-API-KEY": "custom_key"}, verify=False, data=devices)
+
+    e = requests.put('http://127.0.0.1/api/ble',
+                     headers={"X-API-KEY": os.environ["X_API_KEY"] if "X_API_KEY" in os.environ else "custom_key"},
+                     verify=False, data=devices)
     pass
 
 def load_known_devices():

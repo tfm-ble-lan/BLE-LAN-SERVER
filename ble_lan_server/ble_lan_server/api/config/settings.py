@@ -1,6 +1,7 @@
 import os
 import random
 import string
+import secrets
 
 
 class BaseEnvironment(object):
@@ -9,6 +10,10 @@ class BaseEnvironment(object):
     SERVICE_PORT = 80 if "PORT" not in os.environ.keys() else os.environ['PORT']
     HOST = '0.0.0.0'
     DEBUG = True
+    API_KEY_LENGTH = 16
+    ADMIN_API_KEY = secrets.token_urlsafe(API_KEY_LENGTH) \
+        if "ADMIN_API_KEY" not in os.environ.keys() else \
+        os.environ['ADMIN_API_KEY']
 
 
 class LocalEnvironment(BaseEnvironment):
@@ -33,7 +38,8 @@ class AzurePrimaryEnvironment(BaseEnvironment):
         'port': int(os.environ["AZURE_DB_PORT"]) if "AZURE_DB_PORT" in os.environ else 27017,
         'username': os.environ["AZURE_DB_PRIMARY_USER"] if "AZURE_DB_PRIMARY_USER" in os.environ else "",
         'password': os.environ["AZURE_DB_PRIMARY_PASS"] if "AZURE_DB_PRIMARY_PASS" in os.environ else "",
-        'ssl': True
+        'ssl': True,
+        'retrywrites': False
     }
     MONGODB_CONNECTION = f"mongodb://{MONGODB_SETTINGS['username']}:{MONGODB_SETTINGS['password']}" \
                          f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
@@ -50,7 +56,8 @@ class AzureSecondaryEnvironment(BaseEnvironment):
         'port': int(os.environ["AZURE_DB_PORT"]) if "AZURE_DB_PORT" in os.environ else 27017,
         'username': os.environ["AZURE_DB_SECONDARY_USER"] if "AZURE_DB_SECONDARY_USER" in os.environ else "",
         'password': os.environ["AZURE_DB_SECONDARY_PASS"] if "AZURE_DB_SECONDARY_PASS" in os.environ else "",
-        'ssl': True
+        'ssl': True,
+        'retrywrites': False
     }
     MONGODB_CONNECTION = f"mongodb://{MONGODB_SETTINGS['username']}:{MONGODB_SETTINGS['password']}" \
                          f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
@@ -66,7 +73,8 @@ class AzureTestEnvironment(BaseEnvironment):
         'port': int(os.environ["AZURE_DB_PORT"]) if "AZURE_DB_PORT" in os.environ else 27017,
         'username': os.environ["AZURE_DB_PRIMARY_USER"] if "AZURE_DB_PRIMARY_USER" in os.environ else "",
         'password': os.environ["AZURE_DB_PRIMARY_PASS"] if "AZURE_DB_PRIMARY_PASS" in os.environ else "",
-        'ssl': True
+        'ssl': True,
+        'retrywrites': False
     }
     MONGODB_CONNECTION = f"mongodb://{MONGODB_SETTINGS['username']}:{MONGODB_SETTINGS['password']}" \
                          f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
