@@ -34,6 +34,7 @@ on:
     branches: [ "main" ]
     paths:
       - ble_lan_server/**
+      - Dockerfile
   workflow_dispatch:
 
 permissions:
@@ -64,7 +65,7 @@ jobs:
         with:
           push: true
           tags: tfmbleregistry.azurecr.io/${{ env.REPO }}:${{ github.sha }} , tfmbleregistry.azurecr.io/${{ env.REPO }}:latest 
-          file: ./ble_lan_server/Dockerfile
+          file: ./Dockerfile
 
   deploy:
     permissions:
