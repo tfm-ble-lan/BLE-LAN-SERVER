@@ -9,7 +9,6 @@ def admin_required(func):
     def inner(*args, **kwarg):
 
         apikey = request.headers.get('X-API-KEY')
-        c = current_app.config
         if apikey == current_app.config["ADMIN_API_KEY"]:
             current_app.logger.debug(f"Admin Token {apikey} is valid")
         else:
