@@ -22,7 +22,10 @@ detection_model = ns.model('DetectionModel',
                             })
 
 ble_device_model = ns.model('BLEDevice', {
-    'mac': fields.String(required=True, description='MAC adress of the BLE device'),
+    'name': fields.String(required=False, description='Adversitement Name of the device'),
+    'alias': fields.String(required=False, description='Alias for easy human identification'),
+    'address': fields.String(required=True, description='MAC address of the BLE device'),
+    'bluetooth_address': fields.String(required=False, description='bluetooth address of the BLE device'),
     'certified': fields.Boolean(required=False, description='Tell us if the device is known or not'),
     'detections': fields.List(fields.Nested(detection_model))
 })
