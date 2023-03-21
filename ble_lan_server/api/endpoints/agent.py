@@ -1,4 +1,5 @@
 import secrets
+import json
 from flask_restx import Resource, Namespace, fields
 from flask import jsonify, request, current_app
 from ble_lan_server.api.operations.custom_methods import make_response
@@ -83,26 +84,34 @@ class AgentEndpoint2(Resource):
         result = None
         try:
             agents = Agent.objects()
-            result = {"agent": agents}
-
+            result = make_response({"agent": agents}, 200)
         except Exception as ex:
             current_app.logger.error(repr(ex))
             result = make_response('Error {}'.format(repr(ex)), 400)
-
-        return make_response(result, 200)
+        return result
 
     @ns.expect(agent_model)
     @admin_required
     # @ns.marshal_with(agent_model)
-    def post(self):
-        """Create a client given its identifier"""
-        agent = None
+    def put(self):
+        """Create an agent if do not exists on the data base"""
         try:
-            body = request.get_json()
-            api_key = secrets.token_urlsafe(current_app.config.API_KEY_LENGTH)
-            body["api_key"] = api_key
-            agent = Agent(**body).save()
+            body = json.loads(request.get_json())
+            if not body:
+                raise Exception("Wrong input data")
+            body["bt_address"] = body["bt_address"].lower()
+            db_agent = Agent.objects(bt_address=body["bt_address"])
+            if not db_agent:
+                # Agent is not registered
+                api_key = secrets.token_urlsafe(current_app.config["API_KEY_LENGTH"])
+                body["api_key"] = api_key
+                agent = Agent(**body).save()
+            else:
+                # Agent is registered
+                raise Exception("Agent already exists, please ask to an admin to refresh your API key")
+            result = make_response(agent, 200)
         except Exception as ex:
             agent = repr(ex)
             ns.logger.error(agent)
-        return make_response(agent, 200)
+            result = make_response('Error {}'.format(repr(ex)), 400)
+        return result

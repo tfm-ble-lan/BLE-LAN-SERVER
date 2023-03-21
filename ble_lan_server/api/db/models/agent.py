@@ -6,7 +6,7 @@ db = MongoEngine()
 
 class Agent(db.Document):
     name = me.StringField(required=True, unique=True)
-    active = me.BooleanField(required=False, default=True)
+    active = me.BooleanField(required=False, default=False)
     bt_address = me.StringField(required=False, default=None)
     api_key = me.StringField(required=False, default=None, unique=True)
 
