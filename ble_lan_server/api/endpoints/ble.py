@@ -112,8 +112,8 @@ class BLEsEndpoint(Resource):
             # Primero vemos si el Dispositivo existe, en cuyo caso lo actualizamos, de lo contrario, creamos uno nuevo
             ble_device = BleDevice.objects(address=b['address'])
             if ble_device:
-                detection = b['detections'][0]
-                new_detection = Detections(**detection)
+                ble_device = ble_device[0]
+                new_detection = Detections(**b['detections'][0])
                 ble_device.detections.append(new_detection)
                 ble_device.save()
             else:
@@ -122,7 +122,7 @@ class BLEsEndpoint(Resource):
                 except Exception as ex:
                     current_app.logger.error(repr(ex))
                     return make_response('Error {}'.format(repr(ex)), 400)
-            ble_devices.append(ble_device)
+            ble_devices.append(ble_device.address)
 
         result = make_response(jsonify({"devices": ble_devices}), 200)
         return result

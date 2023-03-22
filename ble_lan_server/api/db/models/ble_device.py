@@ -17,7 +17,7 @@ class Localization(db.EmbeddedDocument):
 
 
 class Manufacturer(db.EmbeddedDocument):
-    id = me.StringField(required=True)
+    id = me.IntField(required=True)
     name = me.StringField(required=True)
 
     def parse_to_view(self):
