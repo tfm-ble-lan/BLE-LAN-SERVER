@@ -1,6 +1,5 @@
-from flask import jsonify, make_response, request
+from flask import jsonify, make_response, request, current_app
 from flask_restx import Resource, Namespace, fields
-from werkzeug.exceptions import NotFound
 from mongoengine.queryset.visitor import Q
 from ble_lan_server.api.db.models.ble_device import BleDevice, Detections  # , Localization
 from ble_lan_server.api.decorators import token_required, admin_required
@@ -11,18 +10,28 @@ localization_model = ns.model('Localization', {
     'latitude': fields.Float(required=True, description='Latitude'),
     'longitude': fields.Float(required=True, description='Longitude'),
 })
+manufacturer_model = ns.model('Manufacturer', {
+    'id': fields.Integer(required=True, description='Id: https://www.bluetooth.com/specifications/assigned-numbers/'),
+    'name': fields.String(required=True, description='The name of the company that built the BLE device'),
+})
 
 detection_model = ns.model('DetectionModel',
                            {'timestamp': fields.Float(required=True, description='The timestamp in unix time'),
                             'rssi': fields.Float(required=True,
                                                  description='The agent distance to the agent localization'),
-                            'detected_by_agent': fields.String(required=True,
+                            'tx_power': fields.Float(required=False,
+                                                     description='The agent transmission power'),
+                            'detected_by_agent': fields.String(required=False,
                                                                description='The agent which detect the BLE device'),
                             'agent_localization': fields.Nested(localization_model)
                             })
 
 ble_device_model = ns.model('BLEDevice', {
-    'mac': fields.String(required=True, description='MAC adress of the BLE device'),
+    'name': fields.String(required=False, description='Adversitement Name of the device'),
+    'alias': fields.String(required=False, description='Alias for easy human identification'),
+    'address': fields.String(required=True, description='MAC address of the BLE device'),
+    'bluetooth_address': fields.Integer(required=False, description='bluetooth address of the BLE device'),
+    'manufacturer': fields.Nested(localization_model),
     'certified': fields.Boolean(required=False, description='Tell us if the device is known or not'),
     'detections': fields.List(fields.Nested(detection_model))
 })
@@ -45,7 +54,7 @@ class BLEEndpoint(Resource):
             result = {"agent": ble_device}
 
         except Exception as ex:
-            ns.logger.error(repr(ex))
+            current_app.logger.error(repr(ex))
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(jsonify(result), 200)
@@ -84,7 +93,7 @@ class BLEsEndpoint(Resource):
             result = {"agent": ble_device}
 
         except Exception as ex:
-            ns.logger.error(repr(ex))
+            current_app.logger.error(repr(ex))
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(jsonify(result), 200)
@@ -95,27 +104,26 @@ class BLEsEndpoint(Resource):
     # @token_required
     def put(self):
         '''Post or update a BLE Device'''
-        ble_device = None
-        try:
-            body = request.get_json()
-            # Primero vemos si el Dispositivo existe, en cuyo caso lo actualizamos
-            ble_device = BleDevice.objects.get_or_404(mac=body['mac'])
-
-            # if ble_device:
-            detection = body['detections'][0]
-            new_detection = Detections(**detection)
-            ble_device.detections.append(new_detection)
-            ble_device.save()
-        except NotFound:
-            try:
-                ble_device = BleDevice(**body)
+        ble_devices = []
+        body = request.get_json()
+        for b in body["devices"]:
+            # Primero vemos si el Dispositivo existe, en cuyo caso lo actualizamos, de lo contrario, creamos uno nuevo
+            ble_device = BleDevice.objects(address=b['address'])
+            if ble_device:
+                ble_device = ble_device[0]
+                new_detection = Detections(**b['detections'][0])
+                ble_device.detections.append(new_detection)
                 ble_device.save()
-            except Exception as ex:
-                raise ex
-        except Exception as ex:
-            ns.logger.error(repr(ex))
+            else:
+                try:
+                    ble_device = BleDevice(**b).save()
+                except Exception as ex:
+                    current_app.logger.error(repr(ex))
+                    return make_response('Error {}'.format(repr(ex)), 400)
+            ble_devices.append(ble_device.address)
 
-        return make_response(jsonify(ble_device), 200)
+        result = make_response(jsonify({"devices": ble_devices}), 200)
+        return result
 
 
 @ns.route('/all_detections_by_agent/<string:detected_by_agent>')
@@ -133,7 +141,7 @@ class BLEEndpoint3(Resource):
             result = {"agent_devices": ble_devices}
 
         except Exception as ex:
-            ns.logger.error(repr(ex))
+            current_app.logger.error(repr(ex))
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(jsonify(result), 200)
@@ -191,7 +199,7 @@ class BLEEndpoint4(Resource):
             result = {'ble_devices': new_ble_devices}
 
         except Exception as ex:
-            ns.logger.error(repr(ex))
+            current_app.logger.error(repr(ex))
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(jsonify(result), 200)
