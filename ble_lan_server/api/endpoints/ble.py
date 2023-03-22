@@ -1,10 +1,8 @@
-from flask import jsonify, make_response, request,current_app
+from flask import jsonify, make_response, request, current_app
 from flask_restx import Resource, Namespace, fields
-from werkzeug.exceptions import NotFound
 from mongoengine.queryset.visitor import Q
 from ble_lan_server.api.db.models.ble_device import BleDevice, Detections  # , Localization
 from ble_lan_server.api.decorators import token_required, admin_required
-import json
 
 ns = Namespace("ble", description="BLE's endpoint")
 
@@ -12,7 +10,7 @@ localization_model = ns.model('Localization', {
     'latitude': fields.Float(required=True, description='Latitude'),
     'longitude': fields.Float(required=True, description='Longitude'),
 })
-manufacturer_model = ns.model('Manufacturer',{
+manufacturer_model = ns.model('Manufacturer', {
     'id': fields.Integer(required=True, description='Id: https://www.bluetooth.com/specifications/assigned-numbers/'),
     'name': fields.String(required=True, description='The name of the company that built the BLE device'),
 })
@@ -22,7 +20,7 @@ detection_model = ns.model('DetectionModel',
                             'rssi': fields.Float(required=True,
                                                  description='The agent distance to the agent localization'),
                             'tx_power': fields.Float(required=False,
-                                                 description='The agent transmission power'),
+                                                     description='The agent transmission power'),
                             'detected_by_agent': fields.String(required=False,
                                                                description='The agent which detect the BLE device'),
                             'agent_localization': fields.Nested(localization_model)
