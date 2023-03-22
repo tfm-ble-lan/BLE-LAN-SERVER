@@ -112,6 +112,6 @@ class AgentEndpoint2(Resource):
             result = make_response(agent, 200)
         except Exception as ex:
             agent = repr(ex)
-            ns.logger.error(agent)
+            current_app.logger.error(agent)
             result = make_response('Error {}'.format(repr(ex)), 400)
         return result
