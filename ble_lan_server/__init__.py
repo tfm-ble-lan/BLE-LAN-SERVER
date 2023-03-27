@@ -3,6 +3,7 @@ from flask_restx import Api
 from ble_lan_server.api.endpoints.agent import ns as ns1
 from ble_lan_server.api.endpoints.ble import ns as ns2
 
+
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
 authorizations = {

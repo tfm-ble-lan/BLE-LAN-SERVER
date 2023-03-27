@@ -1,6 +1,5 @@
 from flask import jsonify, make_response, request, current_app
 from flask_restx import Resource, Namespace, fields
-from mongoengine.queryset.visitor import Q
 from ble_lan_server.api.db.models.ble_device import BleDevice, Detections  # , Localization
 from ble_lan_server.api.decorators import token_required, admin_required
 
@@ -35,6 +34,7 @@ ble_device_model = ns.model('BLEDevice', {
     'certified': fields.Boolean(required=False, description='Tell us if the device is known or not'),
     'detections': fields.List(fields.Nested(detection_model))
 })
+ble_device_models = ns.model('BLEDevices', {"devices": fields.List(fields.Nested(ble_device_model))})
 
 
 @ns.route('/<string:mac>')
@@ -99,7 +99,7 @@ class BLEsEndpoint(Resource):
         return make_response(jsonify(result), 200)
 
     @ns.doc('post_or_update_bles')
-    @ns.expect(ble_device_model)
+    @ns.expect(ble_device_models)
     # @ns.marshal_with(ble_device_model)
     # @token_required
     def put(self):
@@ -185,10 +185,8 @@ class BLEEndpoint4(Resource):
                 }
             ]).next().get('max_timestamp')
 
-            ble_devices = BleDevice.objects(
-                Q(detections__detected_by_agent=detected_by_agent) &
-                Q(detections__timestamp=max_timestamp)
-            ).order_by('detections.timestamp').all()
+            ble_devices = BleDevice.objects(detections__detected_by_agent=detected_by_agent,
+                                            detections__timestamp=max_timestamp)
 
             new_ble_devices = []
             for ble_device in ble_devices:
