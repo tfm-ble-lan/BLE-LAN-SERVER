@@ -51,7 +51,7 @@ class BLEEndpoint(Resource):
         result = None
         try:
             ble_device = BleDevice.objects().get_or_404(mac=mac)
-            result = {"agent": ble_device}
+            result = {"ble_devices": ble_device}
 
         except Exception as ex:
             current_app.logger.error(repr(ex))
@@ -90,7 +90,7 @@ class BLEsEndpoint(Resource):
         result = None
         try:
             ble_device = BleDevice.objects()
-            result = {"agent": ble_device}
+            result = {"ble_devices": ble_device}
 
         except Exception as ex:
             current_app.logger.error(repr(ex))
@@ -122,7 +122,7 @@ class BLEsEndpoint(Resource):
                     return make_response('Error {}'.format(repr(ex)), 400)
             ble_devices.append(ble_device.address)
 
-        result = make_response(jsonify({"devices": ble_devices}), 200)
+        result = make_response(jsonify({"ble_devices": ble_devices}), 200)
         return result
 
 
@@ -138,7 +138,7 @@ class BLEEndpoint3(Resource):
         result = None
         try:
             ble_devices = BleDevice.objects(detections__detected_by_agent=detected_by_agent).all()
-            result = {"agent_devices": ble_devices}
+            result = {"ble_devices": ble_devices}
 
         except Exception as ex:
             current_app.logger.error(repr(ex))
@@ -201,3 +201,27 @@ class BLEEndpoint4(Resource):
             result = make_response('Error {}'.format(repr(ex)), 400)
 
         return make_response(jsonify(result), 200)
+
+
+@ns.route('/certificate_ble_device')
+class BLEsEndpoint5(Resource):
+    '''Operations over multiple BLEs'''
+
+    @ns.doc('post_or_update_bles')
+    @ns.expect(ble_device_models)
+    # @ns.marshal_with(ble_device_model)
+    # @token_required
+    def put(self):
+        '''Post or update a BLE Device'''
+        body = request.get_json()
+        ble_device = None
+        for b in body["devices"]:
+            # Primero vemos si el Dispositivo existe, en cuyo caso lo actualizamos, de lo contrario, creamos uno nuevo
+            ble_device = BleDevice.objects(address=b['address'])
+            if ble_device:
+                ble_device.update(**b)
+            else:
+                result = make_response('No existe el dispositivo {}'.format(b['address']), 404)
+
+        result = make_response(jsonify({"ble_device certified": ble_device}), 200)
+        return result

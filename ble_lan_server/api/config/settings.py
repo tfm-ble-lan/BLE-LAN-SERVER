@@ -81,4 +81,5 @@ class AzureTestEnvironment(BaseEnvironment):
                          f"@{MONGODB_SETTINGS['host']}:{MONGODB_SETTINGS['port']}/" \
                          f"?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=" \
                          f"@{MONGODB_SETTINGS['username']}@"
-    FRONTEND_DOMAIN = "https://tfmble.azurewebsites.net"
+    FRONTEND_DOMAIN = os.environ["FRONTEND_DOMAIN"] if "FRONTEND_DOMAIN" in os.environ \
+        else "https://tfmble.azurewebsites.net"
