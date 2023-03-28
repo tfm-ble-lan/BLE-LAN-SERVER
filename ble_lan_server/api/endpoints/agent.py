@@ -63,7 +63,7 @@ class AgentEndpoint(Resource):
             body = request.get_json()
             agent = Agent.objects.get_or_404(name=name)
             agent.update(**body)
-            result = make_response('Agent {} updated'.format(name), 204)
+            result = make_response('Agent {} updated'.format(name), 200)
         except Exception as ex:
             result = make_response('Error {}'.format(repr(ex)), 400)
 
@@ -110,7 +110,7 @@ class AgentEndpoint2(Resource):
             else:
                 # Agent is registered
                 db_agent.update(**body)
-                result = make_response('Agent state for {} updated'.format(body["name"]), 204)
+                result = make_response('Agent state for {} updated'.format(body["name"]), 200)
         except Exception as ex:
             agent = repr(ex)
             current_app.logger.error(agent)
