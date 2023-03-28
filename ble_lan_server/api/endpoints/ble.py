@@ -39,6 +39,7 @@ ble_device_models = ns.model('BLEDevices', {"devices": fields.List(fields.Nested
 parser_period = reqparse.RequestParser()
 parser_period.add_argument('period', type=int, help='Number of seconds from the last detection')
 
+
 @ns.route('/<string:mac>')
 @ns.response(404, 'BLE not found')
 @ns.param('id', 'The BLE identifier')
