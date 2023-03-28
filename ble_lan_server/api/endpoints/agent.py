@@ -1,5 +1,4 @@
 import secrets
-import json
 from flask_restx import Resource, Namespace, fields
 from flask import jsonify, request, current_app
 from ble_lan_server.api.operations.custom_methods import make_response
@@ -64,7 +63,7 @@ class AgentEndpoint(Resource):
             body = request.get_json()
             agent = Agent.objects.get_or_404(name=name)
             agent.update(**body)
-            result = make_response('Agent {} updated'.format(name), 204)
+            result = make_response('Agent {} updated'.format(name), 200)
         except Exception as ex:
             result = make_response('Error {}'.format(repr(ex)), 400)
 
@@ -96,9 +95,10 @@ class AgentEndpoint2(Resource):
     def put(self):
         """Create an agent if do not exists on the data base"""
         try:
-            body = json.loads(request.get_json())
+            body = request.get_json()
             if not body:
                 raise Exception("Wrong input data")
+
             body["bt_address"] = body["bt_address"].lower()
             db_agent = Agent.objects(bt_address=body["bt_address"])
             if not db_agent:
@@ -106,10 +106,11 @@ class AgentEndpoint2(Resource):
                 api_key = secrets.token_urlsafe(current_app.config["API_KEY_LENGTH"])
                 body["api_key"] = api_key
                 agent = Agent(**body).save()
+                result = make_response(agent, 200)
             else:
                 # Agent is registered
-                raise Exception("Agent already exists, please ask to an admin to refresh your API key")
-            result = make_response(agent, 200)
+                db_agent.update(**body)
+                result = make_response('Agent state for {} updated'.format(body["name"]), 200)
         except Exception as ex:
             agent = repr(ex)
             current_app.logger.error(agent)
