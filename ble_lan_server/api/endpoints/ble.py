@@ -1,5 +1,5 @@
 from flask import jsonify, make_response, request, current_app
-from flask_restx import Resource, Namespace, fields
+from flask_restx import Resource, Namespace, fields, reqparse
 from ble_lan_server.api.db.models.ble_device import BleDevice, Detections  # , Localization
 from ble_lan_server.api.decorators import token_required, admin_required
 
@@ -36,6 +36,8 @@ ble_device_model = ns.model('BLEDevice', {
 })
 ble_device_models = ns.model('BLEDevices', {"devices": fields.List(fields.Nested(ble_device_model))})
 
+parser_period = reqparse.RequestParser()
+parser_period.add_argument('period', type=int, help='Number of seconds from the last detection')
 
 @ns.route('/<string:mac>')
 @ns.response(404, 'BLE not found')
@@ -150,9 +152,10 @@ class BLEEndpoint3(Resource):
 @ns.route('/last_detection_by_agent/<string:detected_by_agent>')
 @ns.response(404, 'BLE not found')
 class BLEEndpoint4(Resource):
-    '''Works with Agents to obtain BLEs item'''
+    '''Works with Agents to obtain the latest BLE items detected from last detection minus period of seconds'''
 
-    @ns.doc('get_all_ble_by_agent')
+    @ns.doc('get_last_detection_by_agent')
+    @ns.doc(parser=parser_period)
     # @token_required
     def get(self, detected_by_agent):
         '''Fetch a given BLE'''
@@ -184,9 +187,13 @@ class BLEEndpoint4(Resource):
                     }
                 }
             ]).next().get('max_timestamp')
+            args = parser_period.parse_args()
+            period = args["period"] if args["period"] else current_app.config["DEFAULT_PERIOD"]
 
             ble_devices = BleDevice.objects(detections__detected_by_agent=detected_by_agent,
-                                            detections__timestamp=max_timestamp)
+                                            detections__timestamp__lte=max_timestamp,
+                                            detections__timestamp__gte=(max_timestamp-period)
+                                            )
 
             new_ble_devices = []
             for ble_device in ble_devices:

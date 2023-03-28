@@ -14,6 +14,7 @@ class BaseEnvironment(object):
     ADMIN_API_KEY = secrets.token_urlsafe(API_KEY_LENGTH) \
         if "ADMIN_API_KEY" not in os.environ.keys() else \
         os.environ['ADMIN_API_KEY']
+    DEFAULT_PERIOD = 10  # Period time in seconds of detected BLE's of an agent
 
 
 class LocalEnvironment(BaseEnvironment):
