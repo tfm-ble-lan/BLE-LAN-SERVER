@@ -190,16 +190,17 @@ class BLEEndpoint4(Resource):
             ]).next().get('max_timestamp')
             args = parser_period.parse_args()
             period = args["period"] if args["period"] else current_app.config["DEFAULT_PERIOD"]
-
+            min_timestamp = max_timestamp-period
             ble_devices = BleDevice.objects(detections__detected_by_agent=detected_by_agent,
                                             detections__timestamp__lte=max_timestamp,
-                                            detections__timestamp__gte=(max_timestamp-period)
+                                            detections__timestamp__gte=min_timestamp
                                             )
 
             new_ble_devices = []
             for ble_device in ble_devices:
                 ble_device.detections = [detection for detection in ble_device.detections if
-                                         detection.timestamp == max_timestamp]
+                                         detection.timestamp <= max_timestamp and
+                                         detection.timestamp >= min_timestamp]
                 new_ble_devices.append(ble_device)
 
             result = {'ble_devices': new_ble_devices}
